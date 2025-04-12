@@ -80,6 +80,9 @@ DELIMITER //
 CREATE TRIGGER cursos_actualizar_fecha_modificacion
 BEFORE UPDATE ON cursos
 FOR EACH ROW
+
+
+
 BEGIN
 	SET NEW.modificado = NOW();
 END //

@@ -1,7 +1,9 @@
 <?php
 
-$ul = "localhost/a/b/c/d/e/f/proceso/7";
-$arrayURL = explode("/", $ul);
-$id = end( $arrayURL );
+$url = "/app/controllers/CursosController.php/5";
+$arrayURL = explode("/", $url);
+$id = array_pop($arrayURL);
+echo "El ID extraído es: " . $id;
 
-var_dump($id);
+
+?>

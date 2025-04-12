@@ -1,47 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AcademiaApp</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academia App</title>
 
   <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
   
   <div class="container">
     <div class="card mt-3">
-      <div class="card-header bg-dark text-white">Lista de cursos</div>
+      <div class="card-header">Lista de Cursos</div>
       <div class="card-body">
         <table class="table table-striped table-sm" id="tabla-cursos">
           <colgroup>
-            <col style="width: 4%;">
-            <col style="width: 20%;">
-            <col style="width: 20%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 16%;">
-            <col style="width: 10%;">
+            <col style="width: 4%;">  <!-- ID -->
+            <col style="width: 18%;"> <!-- Categoría -->
+            <col style="width: 17%;"> <!-- Título -->
+            <col style="width: 27%;"> <!-- Descripción -->
+            <col style="width: 10%;"> <!-- Precio -->
+            <col style="width: 7%;"> <!-- Duración -->
+            <col style="width: 7%;"> <!-- Nivel -->
+            <col style="width: 10%;"> <!-- Acciones -->
           </colgroup>
           <thead>
             <tr>
               <th>ID</th>
               <th>Categoría</th>
               <th>Título</th>
+              <th>Descripción</th>
+              <th>Precio</th>
               <th>Duración</th>
               <th>Nivel</th>
-              <th>Precio</th>
-              <th>Fecha inicio</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <!-- Cargado dinámicamente -->
+            <!-- Contenido de forma dinámica -->
           </tbody>
         </table>
       </div>
@@ -49,60 +49,68 @@
   </div>
 
   <script>
+
+    // Acceso global
     const tabla = document.querySelector("#tabla-cursos tbody");
 
-    function obtenerCursos() {
-      fetch(`../../app/controllers/CursoController.php?task=getAll`, {
-        method: 'GET'
-      })
+    function obtenerDatos() {
+      fetch("../../app/controllers/CursosController.php?task=getAll", { method: 'GET' })
         .then(response => response.json())
-        .then(data => {
-          tabla.innerHTML = ``;
-          data.forEach(curso => {
+        .then(data => { 
+          tabla.innerHTML = '';  // Limpiar contenido previo
+
+          data.forEach(element => {
             tabla.innerHTML += `
               <tr>
-                <td>${curso.id}</td>
-                <td>${curso.categoria}</td>
-                <td>${curso.titulo}</td>
-                <td>${curso.duracionhoras} h</td>
-                <td>${curso.nivel}</td>
-                <td>S/ ${curso.precio}</td>
-                <td>${curso.fechainicio}</td>
+                <td>${element.id}</td>
+                <td>${element.categoria}</td>
+                <td>${element.titulo}</td>
+                <td>${element.descripcion}</td>
+                <td>${element.precio}</td>
+                <td>${element.duracionhoras} horas</td>
+                <td>${element.nivel}</td>
                 <td>
-                  <a href='editar.php?id=${curso.id}' class='btn btn-info btn-sm' title='Editar'><i class='fa-solid fa-pen'></i></a>
-                  <a href='#' data-idcurso='${curso.id}' class='btn btn-danger btn-sm delete' title='Eliminar'><i class='fa-solid fa-trash'></i></a>
+                  <a href='editar.php?id=${element.id}' title='Editar' class='btn btn-info btn-sm edit'>
+                    <i class="fa-solid fa-pen"></i>
+                  </a>
+                  <a href='#' title='Eliminar' data-idcurso='${element.id}' class='btn btn-danger btn-sm delete'>
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
                 </td>
               </tr>
             `;
           });
         })
-        .catch(error => console.error(error));
+        .catch(error => { console.error(error); });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      obtenerCursos();
+      // Renderiza los datos obtenidos desde Backend
+      obtenerDatos();
 
+      // Delegación de eventos para botones de eliminar
       tabla.addEventListener("click", (event) => {
         const enlace = event.target.closest('a');
+        
         if (enlace && enlace.classList.contains('delete')) {
           event.preventDefault();
           const idcurso = enlace.getAttribute('data-idcurso');
-
-          if (confirm("¿Estás seguro de eliminar este curso?")) {
-            fetch(`../../app/controllers/CursoController.php/${idcurso}`, {
-              method: 'DELETE'
-            })
-              .then(res => res.json())
-              .then(data => {
-                if (data.filas > 0) {
-                  enlace.closest('tr').remove();
+          
+          if (confirm("¿Está seguro de eliminar este curso?")) {
+            fetch(`../../app/controllers/CursosController.php?id=${idcurso}`, { method: 'DELETE' })
+              .then(response => response.json())
+              .then(datos => { 
+                if (datos.filas > 0) {
+                  const filaEliminar = enlace.closest('tr');
+                  if (filaEliminar) { filaEliminar.remove(); }
                 }
               })
-              .catch(err => console.error(err));
+              .catch(error => { console.error(error); });
           }
         }
       });
     });
+
   </script>
 
 </body>

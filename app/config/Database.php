@@ -1,20 +1,20 @@
 <?php
 
-// Clase de conexión SERVER > BD
-class Database {
+//Clase de conexión SERVER > BD
+class Database{
 
   private static $host = "localhost";
-  private static $dbname = "academia";  // Nombre actualizado de la base de datos
+  private static $dbname = "academia"; // <-- Nombre de la nueva BD
   private static $username = "root";
   private static $password = "";
   private static $charset = "utf8mb4";
   private static $conexion = null;
 
-  // Obtener conexión
-  public static function getConexion() {
-    if (self::$conexion === null) {
-      try {
-        // Estructurar la cadena de conexión
+  public static function getConexion(){
+    if (self::$conexion === null){
+      try{
+        //Estructurar la cadena de conexión
+        //      mysql:host=localhost;port=3306;dbname=academia;charset=utf8mb4
         $DSN = "mysql:host=" . self::$host . ";port=3306;dbname=" . self::$dbname . ";charset=" . self::$charset;
         $options = [
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -22,9 +22,10 @@ class Database {
           PDO::ATTR_EMULATE_PREPARES => false
         ];
 
-        // Crear la conexión
+        //Asignando una conexión activa
         self::$conexion = new PDO($DSN, self::$username, self::$password, $options);
-      } catch (PDOException $e) {
+      }
+      catch(PDOException $e){
         throw new PDOException($e->getMessage());
       }
     }
@@ -32,8 +33,7 @@ class Database {
     return self::$conexion;
   }
 
-  // Cerrar la conexión
-  public static function closeConexion() {
+  public static function closeConexion(){
     self::$conexion = null;
   }
 

@@ -1,5 +1,3 @@
-USE academia;
-
 -- Consultas simples
 SELECT * FROM categorias ORDER BY id;
 SELECT * FROM cursos ORDER BY id;

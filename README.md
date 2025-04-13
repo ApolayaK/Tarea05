@@ -1,5 +1,7 @@
 # Proyecto CRUD de Cursos
 
+Apolaya Schrader Mariana Fernanda
+
 ## Descripción
 
 App en PHP con MySQL para registrar, listar, editar y eliminar cursos.

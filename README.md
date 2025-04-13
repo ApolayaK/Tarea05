@@ -2,22 +2,17 @@
 
 ## Descripción
 
-Este proyecto es una aplicación que permite gestionar cursos. Está hecha en PHP y utiliza una base de datos MySQL para almacenar información sobre categorías y cursos.
+App en PHP con MySQL para registrar, listar, editar y eliminar cursos.
 
-## Avance hasta ahora
+## Estado
 
-Hasta ahora he logrado completar la parte de **registrar cursos**. Esto quiere decir que:
+Proyecto **finalizado** ✅
 
-- Se pueden registrar cursos en la base de datos.
-- Las categorías se cargan dinámicamente en el formulario de registro (son traídas de la base de datos).
-- El formulario permite ingresar el nombre del curso, categoría, duración, nivel, precio y fecha de inicio.
+Se implementó todo el CRUD:
 
-![Formulario de registro de cursos](images/registar-curso.png)
+- Registrar cursos
+- Listar cursos
+- Editar cursos
+- Eliminar cursos
 
-## ¿Qué falta por hacer?
-
-1. Crear la funcionalidad para **listar los cursos** registrados.
-2. Agregar la opción de **editar cursos** ya existentes.
-3. Agregar la opción de **eliminar cursos**.
-
-![Vista de Lista de cursos registrados](images/registar-curso.png)
+Además, el ejemplo original no incluía una página principal (`index.html`), pero se la añadí para que sea más fácil redirigirse a cada parte del CRUD.

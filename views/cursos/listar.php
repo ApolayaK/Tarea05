@@ -6,14 +6,22 @@
   <title>Academia App</title>
 
   <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
 </head>
 <body>
   
   <div class="container">
+    <!-- Alerta si se eliminó correctamente -->
+    <?php if (isset($_GET['msg']) && $_GET['msg'] === 'eliminado') : ?>
+      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        Curso eliminado correctamente.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    <?php endif; ?>
+
     <div class="card mt-3">
       <div class="card-header">Lista de Cursos</div>
       <div class="card-body">
@@ -24,8 +32,8 @@
             <col style="width: 17%;"> <!-- Título -->
             <col style="width: 27%;"> <!-- Descripción -->
             <col style="width: 10%;"> <!-- Precio -->
-            <col style="width: 7%;"> <!-- Duración -->
-            <col style="width: 7%;"> <!-- Nivel -->
+            <col style="width: 7%;">  <!-- Duración -->
+            <col style="width: 7%;">  <!-- Nivel -->
             <col style="width: 10%;"> <!-- Acciones -->
           </colgroup>
           <thead>
@@ -33,7 +41,6 @@
               <th>ID</th>
               <th>Categoría</th>
               <th>Título</th>
-              <th>Descripción</th>
               <th>Precio</th>
               <th>Duración</th>
               <th>Nivel</th>
@@ -46,18 +53,22 @@
         </table>
       </div>
     </div>
+
+    <!-- Botón Volver -->
+    <div class="mt-3 text-center">
+      <a href="../../index.html" class="btn btn-secondary">Volver</a>
+    </div>
+
   </div>
 
   <script>
-
-    // Acceso global
     const tabla = document.querySelector("#tabla-cursos tbody");
 
     function obtenerDatos() {
-      fetch("../../app/controllers/CursosController.php?task=getAll", { method: 'GET' })
+      fetch("../../app/controllers/CursosController.php?task=getAll")
         .then(response => response.json())
         .then(data => { 
-          tabla.innerHTML = '';  // Limpiar contenido previo
+          tabla.innerHTML = '';
 
           data.forEach(element => {
             tabla.innerHTML += `
@@ -65,15 +76,14 @@
                 <td>${element.id}</td>
                 <td>${element.categoria}</td>
                 <td>${element.titulo}</td>
-                <td>${element.descripcion}</td>
                 <td>${element.precio}</td>
                 <td>${element.duracionhoras} horas</td>
                 <td>${element.nivel}</td>
                 <td>
-                  <a href='editar.php?id=${element.id}' title='Editar' class='btn btn-info btn-sm edit'>
+                  <a href='editar.php?id=${element.id}' title='Editar' class='btn btn-info btn-sm'>
                     <i class="fa-solid fa-pen"></i>
                   </a>
-                  <a href='#' title='Eliminar' data-idcurso='${element.id}' class='btn btn-danger btn-sm delete'>
+                  <a href='eliminar.php?id=${element.id}' title='Eliminar' class='btn btn-danger btn-sm' onclick="return confirm('¿Estás seguro de eliminar este curso?')">
                     <i class="fa-solid fa-trash"></i>
                   </a>
                 </td>
@@ -84,34 +94,10 @@
         .catch(error => { console.error(error); });
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      // Renderiza los datos obtenidos desde Backend
-      obtenerDatos();
-
-      // Delegación de eventos para botones de eliminar
-      tabla.addEventListener("click", (event) => {
-        const enlace = event.target.closest('a');
-        
-        if (enlace && enlace.classList.contains('delete')) {
-          event.preventDefault();
-          const idcurso = enlace.getAttribute('data-idcurso');
-          
-          if (confirm("¿Está seguro de eliminar este curso?")) {
-            fetch(`../../app/controllers/CursosController.php?id=${idcurso}`, { method: 'DELETE' })
-              .then(response => response.json())
-              .then(datos => { 
-                if (datos.filas > 0) {
-                  const filaEliminar = enlace.closest('tr');
-                  if (filaEliminar) { filaEliminar.remove(); }
-                }
-              })
-              .catch(error => { console.error(error); });
-          }
-        }
-      });
-    });
-
+    document.addEventListener("DOMContentLoaded", obtenerDatos);
   </script>
 
+  <!-- Bootstrap JS (para alertas y botones) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

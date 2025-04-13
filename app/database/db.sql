@@ -1,3 +1,4 @@
+-- Active: 1744469964834@@127.0.0.1@3307@test
 CREATE DATABASE academia;
 USE academia;
 

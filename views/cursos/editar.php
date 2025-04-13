@@ -3,16 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Academia App</title>
-
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+  <title>Academia App - Editar Curso</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  
-  <div class="container">
 
+  <div class="container">
     <form action="" autocomplete="off" id="formulario-actualizar">
       <div class="card mt-3">
         <div class="card-header bg-primary text-light">Actualizar datos de curso</div>
@@ -21,7 +17,6 @@
           <div class="form-floating mb-2">
             <select name="categorias" id="categorias" class="form-select" required>
               <option value="">Seleccione</option>
-              <!-- Las categorías serán cargadas dinámicamente -->
             </select>
             <label for="categorias">Categoría</label>
           </div>
@@ -32,32 +27,18 @@
           </div>
 
           <div class="form-floating mb-2">
-            <input type="text" class="form-control" id="descripcion" placeholder="Descripción" required>
-            <label for="descripcion">Descripción</label>
+            <input type="number" step="0.01" class="form-control" id="precio" placeholder="Precio" required>
+            <label for="precio">Precio</label>
           </div>
 
-          <!-- Compartir fila -->
-          <div class="row g-2">
-
-            <div class="col">
-              <div class="form-floating mb-2">
-                <input type="text" class="form-control text-end" id="precio" placeholder="Precio" required>
-                <label for="precio">Precio</label>
-              </div>
-            </div>
-            <div class="col">
-              <div class="form-floating mb-2">
-                <input type="number" value="6" min="0" max="48" step="3" class="form-control text-end" id="duracion" placeholder="Duración (horas)" required>
-                <label for="duracion">Duración (horas)</label>
-              </div>
-            </div>
-
+          <div class="form-floating mb-2">
+            <input type="number" min="0" max="48" step="1" class="form-control" id="duracion" placeholder="Duración (horas)" required>
+            <label for="duracion">Duración (horas)</label>
           </div>
-          <!-- Fin compartir fila -->
 
-          <div class="form-floating">
+          <div class="form-floating mb-3">
             <select name="nivel" id="nivel" class="form-select">
-              <option value="Básico" selected>Básico</option>
+              <option value="Básico">Básico</option>
               <option value="Intermedio">Intermedio</option>
               <option value="Avanzado">Avanzado</option>
             </select>
@@ -67,82 +48,88 @@
         </div>
         <div class="card-footer text-end">
           <button class="btn btn-sm btn-primary" type="submit">Actualizar</button>
-          <button class="btn btn-sm btn-secondary" type="reset">Cancelar</button>
+          <button class="btn btn-sm btn-secondary" type="button" id="cancelar">Cancelar</button>
         </div>
-      </div> <!-- ./card -->
+      </div>
     </form>
-
-  </div> <!-- ./container -->
+    
+    <!-- Botón Volver -->
+    <div class="mt-3 text-center">
+      <a href="listar.php" class="btn btn-secondary">Volver</a>
+    </div>
+  </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-
-      // Obtener el ID del curso desde la URL
       const URL = new URLSearchParams(window.location.search);
       const idCurso = URL.get('id');
 
-      // Obtener las categorías para el select (esto debería venir de tu controlador de categorías)
-      fetch('../../app/controllers/CategoriasController.php?task=getAll')
-        .then(response => response.json())
+      let categoriaSeleccionada = null;
+
+      // Primero obtenemos los datos del curso
+      fetch(`../../app/controllers/CursosController.php?task=getById&id=${idCurso}`)
+        .then(res => res.json())
         .then(data => {
-          const categoriasSelect = document.querySelector("#categorias");
-          data.forEach(categoria => {
-            categoriasSelect.innerHTML += `<option value="${categoria.id}">${categoria.nombre}</option>`;
-          });
+          categoriaSeleccionada = data.idcategoria;
+          document.querySelector("#titulo").value = data.titulo;
+          document.querySelector("#precio").value = data.precio;
+          document.querySelector("#duracion").value = data.duracionhoras;
+          document.querySelector("#nivel").value = data.nivel;
+
+          // Luego cargamos las categorías y seleccionamos la correcta
+          fetch('../../app/controllers/CursosController.php?task=getCategorias')
+            .then(res => res.json())
+            .then(categorias => {
+              const select = document.querySelector("#categorias");
+              select.innerHTML = '<option value="">Seleccione</option>'; // Limpiamos las opciones previas
+
+              categorias.forEach(cat => {
+                // Verifica que el ID de la categoría coincide con el de curso
+                const selected = (cat.id == categoriaSeleccionada) ? 'selected' : '';
+                select.innerHTML += `<option value="${cat.id}" ${selected}>${cat.categoria}</option>`;
+              });
+            })
+            .catch(error => console.log('Error al cargar las categorías:', error));
         })
-        .catch(error => { console.error("Error cargando categorías:", error); });
+        .catch(error => console.log('Error al obtener los datos del curso:', error));
 
-      // Función para obtener los datos del curso
-      function obtenerCurso() {
-        fetch(`../../app/controllers/CursosController.php?task=getById&idcurso=${idCurso}`)
-          .then(response => response.json())
-          .then(data => {
-            if (data) {
-              // Rellenar los campos del formulario con los datos del curso
-              document.querySelector("#categorias").value = data.categoria_id;
-              document.querySelector("#titulo").value = data.titulo;
-              document.querySelector("#descripcion").value = data.descripcion;
-              document.querySelector("#precio").value = data.precio;
-              document.querySelector("#duracion").value = data.duracionhoras;
-              document.querySelector("#nivel").value = data.nivel;
-            }
-          })
-          .catch(error => { console.error("Error obteniendo el curso:", error); });
-      }
-
-      // Obtener los datos del curso
-      obtenerCurso();
-
-      // Llamar a la función para actualizar el curso
-      const formulario = document.querySelector("#formulario-actualizar");
-      formulario.addEventListener("submit", function (event) {
-        event.preventDefault();
+      // Enviar actualización
+      document.querySelector("#formulario-actualizar").addEventListener("submit", (e) => {
+        e.preventDefault();
 
         if (confirm("¿Está seguro de actualizar los datos del curso?")) {
-          fetch(`../../app/controllers/CursosController.php`, {
+          fetch('../../app/controllers/CursosController.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               id: idCurso,
-              categoria_id: document.querySelector("#categorias").value,
+              idcategoria: document.querySelector("#categorias").value,
               titulo: document.querySelector("#titulo").value,
-              descripcion: document.querySelector("#descripcion").value,
-              precio: parseFloat(document.querySelector("#precio").value),
               duracionhoras: parseInt(document.querySelector("#duracion").value),
-              nivel: document.querySelector("#nivel").value
+              nivel: document.querySelector("#nivel").value,
+              precio: parseFloat(document.querySelector("#precio").value),
+              fechainicio: "2025-01-01"
             })
           })
-          .then(response => response.json())
+          .then(res => res.json())
           .then(data => {
-            if (data.success) {
+            if (data.filas > 0) {
               alert("Curso actualizado correctamente.");
-              window.location.href = 'listar.php'; // Redirigir a la lista de cursos
+              window.location.href = 'listar.php';
+            } else {
+              alert("No se realizaron cambios.");
             }
           })
-          .catch(error => console.error("Error al actualizar el curso:", error));
+          .catch(error => console.log('Error al actualizar el curso:', error));
         }
       });
 
+      // Funcionalidad del botón Cancelar: limpiar los campos
+      document.querySelector("#cancelar").addEventListener("click", () => {
+        if (confirm("¿Está seguro de cancelar y limpiar los campos?")) {
+          document.querySelector("#formulario-actualizar").reset(); // Limpia todos los campos del formulario
+        }
+      });
     });
   </script>
 

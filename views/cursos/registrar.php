@@ -71,11 +71,15 @@ $categorias = $categoriaModel->getAll();
         </div>
         <div class="card-footer text-end">
           <button class="btn btn-sm btn-primary" type="submit">Guardar</button>
-          <button class="btn btn-sm btn-secondary" type="reset">Cancelar</button>
+          <button class="btn btn-sm btn-secondary" type="reset" href="../../index.html">Cancelar</button>
         </div>
       </div> <!-- ./card -->
     </form>
 
+        <!-- Botón Volver -->
+        <div class="mt-3 text-center">
+      <a href="../../index.html" class="btn btn-secondary">Volver</a>
+    </div>
   </div> <!-- ./container -->
 
   <script>
@@ -111,6 +115,8 @@ $categorias = $categoriaModel->getAll();
         registrarCurso();
       }
     });
+
+    
   </script>
 
 </body>
